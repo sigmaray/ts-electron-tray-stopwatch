@@ -72,17 +72,9 @@ function createTextIcon(text: string): Electron.NativeImage {
   const canvas = createCanvas(size, size);
   const ctx = canvas.getContext('2d');
   
-  // Определяем цвет в зависимости от состояния
-  let bgColor: string;
-  let textColor: string = '#FFFFFF';
-  
-  if (text === '—') {
-    // Прочерк: серый
-    bgColor = '#808080';
-  } else {
-    // Активный секундомер: зеленый
-    bgColor = '#10b981';
-  }
+  // Всегда используем зеленый фон
+  const bgColor = '#10b981';
+  const textColor = '#FFFFFF';
   
   // Рисуем фон
   ctx.fillStyle = bgColor;
