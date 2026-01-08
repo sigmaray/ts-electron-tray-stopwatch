@@ -19,7 +19,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
     ipcRenderer.send('stopwatch-pause');
   },
   // Слушатели событий от main процесса
-  onStopwatchUpdate: (callback: (state: { elapsedSeconds: number; isRunning: boolean; isPaused: boolean }) => void) => {
+  onStopwatchUpdate: (callback: (state: { elapsedSeconds: number; elapsedMilliseconds: number; isRunning: boolean; isPaused: boolean }) => void) => {
     ipcRenderer.on('stopwatch-update', (_event, state) => callback(state));
   },
   // Удаление слушателей

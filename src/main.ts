@@ -14,8 +14,9 @@ declare global {
 let mainWindow: BrowserWindow | null = null;
 let tray: Tray | null = null;
 
-let stopwatchState: { elapsedSeconds: number; isRunning: boolean; isPaused: boolean } = {
+let stopwatchState: { elapsedSeconds: number; elapsedMilliseconds: number; isRunning: boolean; isPaused: boolean } = {
   elapsedSeconds: 0,
+  elapsedMilliseconds: 0,
   isRunning: false,
   isPaused: false
 };
@@ -134,6 +135,7 @@ function sendStopwatchUpdateToRenderer(): void {
   if (mainWindow && !mainWindow.isDestroyed()) {
     mainWindow.webContents.send('stopwatch-update', {
       elapsedSeconds: stopwatchState.elapsedSeconds,
+      elapsedMilliseconds: stopwatchState.elapsedMilliseconds,
       isRunning: stopwatchState.isRunning,
       isPaused: stopwatchState.isPaused
     });
@@ -149,10 +151,11 @@ function startStopwatch(): void {
   
   if (stopwatchState.isPaused) {
     // Возобновляем с места паузы
-    startTime = Date.now() - (stopwatchState.elapsedSeconds * 1000);
+    startTime = Date.now() - stopwatchState.elapsedMilliseconds;
   } else {
     // Запускаем заново
     stopwatchState.elapsedSeconds = 0;
+    stopwatchState.elapsedMilliseconds = 0;
     startTime = Date.now();
     pausedElapsed = 0;
   }
@@ -162,9 +165,11 @@ function startStopwatch(): void {
   
   stopwatchInterval = setInterval(() => {
     const currentTime = Date.now();
-    stopwatchState.elapsedSeconds = Math.floor((currentTime - startTime) / 1000);
+    const elapsedMs = currentTime - startTime;
+    stopwatchState.elapsedMilliseconds = elapsedMs;
+    stopwatchState.elapsedSeconds = Math.floor(elapsedMs / 1000);
     sendStopwatchUpdateToRenderer();
-  }, 100); // Обновляем каждые 100мс для точности
+  }, 10); // Обновляем каждые 10мс для плавного отображения миллисекунд
   
   sendStopwatchUpdateToRenderer();
 }
@@ -188,6 +193,7 @@ function stopStopwatch(): void {
   }
   
   stopwatchState.elapsedSeconds = 0;
+  stopwatchState.elapsedMilliseconds = 0;
   stopwatchState.isRunning = false;
   stopwatchState.isPaused = false;
   startTime = 0;

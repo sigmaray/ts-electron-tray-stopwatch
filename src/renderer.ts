@@ -1,4 +1,5 @@
 let elapsedSeconds: number = 0;
+let elapsedMilliseconds: number = 0;
 let isRunning: boolean = false;
 let isPaused: boolean = false;
 
@@ -9,25 +10,27 @@ interface ElectronAPI {
   startStopwatch: () => void;
   stopStopwatch: () => void;
   pauseStopwatch: () => void;
-  onStopwatchUpdate: (callback: (state: { elapsedSeconds: number; isRunning: boolean; isPaused: boolean }) => void) => void;
+  onStopwatchUpdate: (callback: (state: { elapsedSeconds: number; elapsedMilliseconds: number; isRunning: boolean; isPaused: boolean }) => void) => void;
   removeStopwatchUpdateListener: () => void;
 }
 
-function formatTime(seconds: number): string {
-  const hours = Math.floor(seconds / 3600);
-  const mins = Math.floor((seconds % 3600) / 60);
-  const secs = seconds % 60;
+function formatTime(milliseconds: number): string {
+  const totalSeconds = Math.floor(milliseconds / 1000);
+  const ms = Math.floor((milliseconds % 1000) / 10); // Показываем сотые доли секунды (00-99)
+  const hours = Math.floor(totalSeconds / 3600);
+  const mins = Math.floor((totalSeconds % 3600) / 60);
+  const secs = totalSeconds % 60;
   
   if (hours > 0) {
-    return `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    return `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}.${String(ms).padStart(2, '0')}`;
   }
-  return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+  return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}.${String(ms).padStart(2, '0')}`;
 }
 
 function updateDisplay(): void {
   const display = document.getElementById('stopwatchDisplay');
   if (display) {
-    display.textContent = formatTime(elapsedSeconds);
+    display.textContent = formatTime(elapsedMilliseconds);
   }
 }
 
@@ -94,6 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Слушаем обновления секундомера
     electronAPI.onStopwatchUpdate((state) => {
       elapsedSeconds = state.elapsedSeconds;
+      elapsedMilliseconds = state.elapsedMilliseconds;
       isRunning = state.isRunning;
       isPaused = state.isPaused;
       
