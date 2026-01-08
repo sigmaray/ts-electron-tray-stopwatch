@@ -256,7 +256,7 @@ function createWindow(): void {
   
   // Вычисляем позицию для центрирования окна на основном мониторе
   const windowWidth = 600;
-  const windowHeight = 500;
+  const windowHeight = 700;
   const windowX = x + Math.floor((width - windowWidth) / 2);
   const windowY = y + Math.floor((height - windowHeight) / 2);
   
