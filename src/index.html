@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Секундомер</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            margin: 0;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+        }
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        .stopwatch-section {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 40px 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+        .stopwatch-display {
+            font-size: 4.5em;
+            font-weight: bold;
+            margin: 30px 0;
+            font-variant-numeric: tabular-nums;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .stopwatch-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+        }
+        button {
+            padding: 14px 35px;
+            font-size: 1.1em;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #059669;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 180px;
+        }
+        button:hover:not(:disabled) {
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        button:active:not(:disabled) {
+            transform: translateY(0);
+        }
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .app-controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .close-btn {
+            background: rgba(255, 100, 100, 0.9) !important;
+            color: white !important;
+        }
+        .close-btn:hover {
+            background: rgba(255, 80, 80, 1) !important;
+        }
+        .status {
+            margin-top: 20px;
+            font-size: 1em;
+            min-height: 24px;
+        }
+        .info {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 30px;
+            backdrop-filter: blur(10px);
+            font-size: 0.9em;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⏱️ Секундомер</h1>
+        
+        <div class="stopwatch-section">
+            <div class="stopwatch-display" id="stopwatchDisplay">00:00</div>
+            <div class="stopwatch-controls">
+                <button id="startBtn">Старт</button>
+                <button id="pauseBtn" disabled>Пауза</button>
+                <button id="stopBtn" disabled>Стоп</button>
+                <div class="app-controls">
+                    <button id="minimizeBtn">Свернуть в трей</button>
+                    <button id="closeBtn" class="close-btn">Закрыть</button>
+                </div>
+                <div class="status" id="status">Секундомер остановлен</div>
+            </div>
+        </div>
+        
+        <div class="info">
+            <p><strong>Инструкция:</strong></p>
+            <p>• Нажмите "Старт" для запуска секундомера</p>
+            <p>• Нажмите "Пауза" для приостановки</p>
+            <p>• Нажмите "Стоп" для остановки и сброса</p>
+            <p>• При закрытии окна приложение сворачивается в трей</p>
+            <p>• В трее отображается время, когда секундомер запущен</p>
+        </div>
+    </div>
+
+    <script src="renderer.js"></script>
+</body>
+</html>
+
