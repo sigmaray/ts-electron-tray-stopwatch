@@ -14,6 +14,11 @@ declare global {
 let mainWindow: BrowserWindow | null = null;
 let tray: Tray | null = null;
 
+// Экспортируем tray для тестирования (только в development режиме)
+if (process.env.NODE_ENV === 'test' || process.env.ELECTRON_DISABLE_SANDBOX) {
+  (global as any).__tray__ = () => tray;
+}
+
 let stopwatchState: { elapsedSeconds: number; elapsedMilliseconds: number; isRunning: boolean; isPaused: boolean } = {
   elapsedSeconds: 0,
   elapsedMilliseconds: 0,
