@@ -33,6 +33,8 @@ let stopwatchState: { elapsedSeconds: number; elapsedMilliseconds: number; isRun
 let stopwatchInterval: NodeJS.Timeout | null = null;
 let startTime: number = 0; // Время когда секундомер был запущен
 let pausedElapsed: number = 0; // Накопленное время до паузы
+let lastTrayUpdateSeconds: number = -1; // Последнее значение секунд, для которого обновлялась иконка трея
+let lastTrayState: { isRunning: boolean; isPaused: boolean } | null = null; // Последнее состояние для отслеживания изменений
 
 function updateTrayMenu(): void {
   if (!tray) return;
@@ -117,6 +119,23 @@ function formatTimeForTray(seconds: number): string {
 function updateTrayIcon(): void {
   if (!tray) return;
   
+  // Обновляем иконку трея только если изменилось значение секунд или состояние
+  // Это предотвращает мерцание от слишком частых обновлений
+  const currentSeconds = stopwatchState.elapsedSeconds;
+  const currentState = { isRunning: stopwatchState.isRunning, isPaused: stopwatchState.isPaused };
+  
+  const stateChanged = !lastTrayState || 
+    lastTrayState.isRunning !== currentState.isRunning || 
+    lastTrayState.isPaused !== currentState.isPaused;
+  
+  const secondsChanged = lastTrayUpdateSeconds !== currentSeconds;
+  
+  // Обновляем только если изменились секунды или состояние
+  if (!stateChanged && !secondsChanged) return;
+  
+  lastTrayUpdateSeconds = currentSeconds;
+  lastTrayState = { ...currentState };
+  
   let icon: Electron.NativeImage;
   let tooltipText: string;
   
@@ -133,6 +152,7 @@ function updateTrayIcon(): void {
     // Прочерк когда секундомер не запущен
     icon = createTextIcon('—');
     tooltipText = 'Секундомер не запущен';
+    lastTrayUpdateSeconds = -1;
   }
   
   tray.setImage(icon);
@@ -166,6 +186,8 @@ function startStopwatch(): void {
     stopwatchState.elapsedMilliseconds = 0;
     startTime = Date.now();
     pausedElapsed = 0;
+    lastTrayUpdateSeconds = -1; // Сбрасываем счетчик обновлений трея
+    lastTrayState = null; // Сбрасываем состояние для принудительного обновления
   }
   
   stopwatchState.isRunning = true;
@@ -206,6 +228,8 @@ function stopStopwatch(): void {
   stopwatchState.isPaused = false;
   startTime = 0;
   pausedElapsed = 0;
+  lastTrayUpdateSeconds = -1; // Сбрасываем счетчик обновлений трея
+  lastTrayState = null; // Сбрасываем состояние для принудительного обновления
   
   sendStopwatchUpdateToRenderer();
 }
